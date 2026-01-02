@@ -6,6 +6,7 @@ services:
       - "8501:8501"
     depends_on:
       - llm
+      - llm2
 
   llm:
     image: ghcr.io/ggml-org/llama.cpp:server  # Using the official llama.cpp engine
@@ -13,4 +14,12 @@ services:
       - ./models:/models
     ports:
       - "12434:8080"
-    command: ["-m", "/models/Phi-4-mini-instruct-Q5_K_M.gguf", "--host", "0.0.0.0", "--port", "8080", "-c", "64000", "--log-verbosity", "0"]
+    command: ["-m", "/models/Phi-4-mini-instruct-Q5_K_M.gguf", "--host", "0.0.0.0", "--port", "8080", "-c", "4096", "--log-verbosity", "0"]
+
+  llm2:
+    image: ghcr.io/ggml-org/llama.cpp:server  # Second model service
+    volumes:
+      - ./models:/models
+    ports:
+      - "12435:8080"  # Different external port
+    command: ["-m", "/models/microsoft_Phi-4-mini-instruct-Q4_K_M.gguf", "--host", "0.0.0.0", "--port", "8080", "-c", "4096", "--log-verbosity", "0"]

@@ -6,11 +6,18 @@ import os
 # Load environment variables
 load_dotenv()
 
-# Initialize OpenAI client
-client = OpenAI(base_url=os.getenv("BASE_URL"), api_key=os.getenv("API_KEY"))
+# Model options with their base URLs
+model_options = {
+    "Phi-4 Q5_K_M": "http://llm:8080/v1/",
+    "Phi-4 Q4_K_M": "http://llm2:8080/v1/"
+}
 
 # Streamlit UI
 st.title("Local LLM Chat")
+
+# Model selection
+selected_model = st.selectbox("Select Model", list(model_options.keys()))
+
 prompt = st.text_area("Enter your prompt:", "")
 
 if st.button("Send"):
@@ -19,12 +26,15 @@ if st.button("Send"):
         reasoning_instruction = "\n\nPlease think step by step and provide your reasoning before giving the final answer."
         full_prompt = prompt + reasoning_instruction
         
+        # Initialize client with selected model's base URL
+        client = OpenAI(base_url=model_options[selected_model], api_key=os.getenv("API_KEY"))
+        
         messages = [
             {"role": "user", "content": full_prompt}
         ]
         try:
             response = client.chat.completions.create(
-                model=os.getenv("MODEL"),
+                model=os.getenv("MODEL"),  # This might need adjustment if models have different names
                 messages=messages
             )
             
