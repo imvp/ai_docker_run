@@ -1,3 +1,2 @@
 .DS_Store
-*.gguf
-models/
+models/*.gguf

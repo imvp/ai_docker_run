@@ -15,8 +15,12 @@ prompt = st.text_area("Enter your prompt:", "")
 
 if st.button("Send"):
     with st.spinner("Getting response..."):
+        # Add reasoning instruction to the prompt
+        reasoning_instruction = "\n\nPlease think step by step and provide your reasoning before giving the final answer."
+        full_prompt = prompt + reasoning_instruction
+        
         messages = [
-            {"role": "user", "content": prompt}
+            {"role": "user", "content": full_prompt}
         ]
         try:
             response = client.chat.completions.create(
@@ -27,9 +31,27 @@ if st.button("Send"):
             # Extract the text content from the response
             answer = response.choices[0].message.content
             
-            # Display the result in the Streamlit UI
-            st.markdown("### Response:")
-            st.write(answer)
+            # Try to parse reasoning and final answer
+            # Look for common separators between reasoning and answer
+            separators = ["Final answer:", "Answer:", "Conclusion:", "Therefore,"]
+            reasoning = ""
+            final_answer = answer
+            
+            for separator in separators:
+                if separator in answer:
+                    parts = answer.split(separator, 1)
+                    reasoning = parts[0].strip()
+                    final_answer = parts[1].strip()
+                    break
+            
+            # Display reasoning in an expander if found
+            if reasoning:
+                with st.expander("Reasoning"):
+                    st.write(reasoning)
+            
+            # Display the final answer
+            st.markdown("### Answer:")
+            st.write(final_answer)
 
         except Exception as e:
             # Catch connection errors, API timeouts, or configuration issues

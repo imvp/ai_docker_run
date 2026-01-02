@@ -13,4 +13,4 @@ services:
       - ./models:/models
     ports:
       - "12434:8080"
-    command: ["-m", "/models/microsoft_Phi-4-mini-reasoning-Q5_K_M.gguf", "--host", "0.0.0.0", "--port", "8080", "-c", "64000", "--log-verbosity", "0"]
+    command: ["-m", "/models/Phi-4-mini-instruct-Q5_K_M.gguf", "--host", "0.0.0.0", "--port", "8080", "-c", "64000", "--log-verbosity", "0"]
